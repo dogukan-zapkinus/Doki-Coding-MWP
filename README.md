@@ -238,6 +238,8 @@ When contributing educational content, clarity matters more than complexity.
 
 A beginner should be able to understand the lesson without already being an experienced developer.
 
+https://www.patreon.com/cw/dogukancengiz
+
 ---
 
 ## Philosophy
