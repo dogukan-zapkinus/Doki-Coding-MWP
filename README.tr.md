@@ -121,7 +121,6 @@ Mevcut deneyimde:
 - Türkçe / İngilizce arayüz
 - interaktif geri bildirim
 - ses geri bildirimleri
-- tilki tarzı öğrenme yardımcısı
 - kısa bir başlangıç turu
 
 bulunuyor.
@@ -149,20 +148,6 @@ Bunun yerine:
 7. ilerle
 
 Proje bu döngünün etrafında tasarlanıyor.
-
----
-
-## Tilki neden var?
-
-Çünkü öğrenme deneyiminin soğuk olması gerekmiyor.
-
-Doki Coding küçük bir tilki yardımcısı kullanarak geri bildirimleri daha sıcak ve akılda kalıcı hale getirmeyi amaçlıyor.
-
-Tilki ilerlemeye tepki verebilir, tekrar denemeyi teşvik edebilir ve hataların öğrenme sürecinin doğal bir parçası olduğunu hissettirebilir.
-
-Amaç başka bir ürünü kopyalamak değil.
-
-Amaç Doki Coding'in kendine ait, tanınabilir bir öğrenme deneyimi oluşturması.
 
 ---
 
