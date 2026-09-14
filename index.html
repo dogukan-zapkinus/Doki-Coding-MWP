@@ -1,94 +1,1446 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doki Coding - Learn Python</title>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Nunito', 'sans-serif'] },
-                    colors: { darkbg: '#0f172a', darkcard: '#1e293b', orangefox: '#f97316' }
-                }
-            }
-        }
-    </script>
-    <style>
-        .fade-in { animation: fadeIn 0.4s ease forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .path-node { transition: transform 0.2s; }
-        .path-node:hover:not(.locked) { transform: scale(1.1); }
-        .locked { filter: grayscale(100%); opacity: 0.5; cursor: not-allowed; }
-        .roadmap-line { position: absolute; width: 8px; background: #e2e8f0; left: 50%; transform: translateX(-50%); z-index: -1; }
-        .dark .roadmap-line { background: #334155; }
-    </style>
-</head>
-<script>
-    if (localStorage.getItem("dokicoding_theme") === "dark" || (!localStorage.getItem("dokicoding_theme") && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
-        document.documentElement.classList.add("dark");
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ff7a1a">
+  <title>Doki Coding — MWP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
+  <style>
+    :root{
+      --bg:#fff9f4;--panel:#fff;--panel-2:#fff4ec;--text:#242424;--muted:#747474;
+      --line:#eadfd6;--orange:#ff7a1a;--orange-dark:#e9650b;--green:#2f9e44;--red:#d94841;
+      --shadow:0 10px 30px rgba(74,43,21,.10);--radius:24px;
     }
-</script>
-<body class="bg-slate-50 dark:bg-darkbg text-slate-800 dark:text-slate-100 min-h-screen flex flex-col selection:bg-orange-200 transition-colors duration-300">
+    :root.dark{
+      --bg:#121212;--panel:#1c1c1c;--panel-2:#29231f;--text:#f5f5f5;--muted:#b8b8b8;
+      --line:#383838;--orange:#ff8b3d;--orange-dark:#ff9d5c;--shadow:0 14px 38px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:Nunito,system-ui,sans-serif}
+    button{font:inherit}
+    button:focus-visible{outline:3px solid rgba(255,122,26,.35);outline-offset:2px}
+    .topbar{
+      position:sticky;top:0;z-index:50;display:flex;justify-content:space-between;align-items:center;
+      padding:10px 18px;background:color-mix(in srgb,var(--panel) 94%,transparent);
+      backdrop-filter:blur(12px);border-bottom:1px solid var(--line)
+    }
+    .brand{display:flex;align-items:center;gap:10px;border:0;background:transparent;color:var(--text);cursor:pointer}
+    .brand-mark{width:38px;height:38px;border-radius:12px;background:var(--panel-2);border:1px solid var(--line);display:grid;place-items:center}
+    .brand-mark svg{width:28px;height:28px}
+    .brand-name{font-size:20px;font-weight:900;line-height:1}
+    .brand-by{font-size:9px;font-weight:900;letter-spacing:1.1px;color:var(--muted);margin-top:4px;text-transform:uppercase}
+    .top-actions{display:flex;align-items:center;gap:8px}
+    .icon-btn,.login-btn,.language-btn{
+      border:1px solid var(--line);background:var(--panel);color:var(--text);cursor:pointer;font-weight:900;
+      border-radius:14px;transition:.18s
+    }
+    .icon-btn{width:44px;height:44px;display:grid;place-items:center}
+    .icon-btn:hover,.login-btn:hover,.language-btn:hover{border-color:var(--orange);transform:translateY(-1px)}
+    .login-btn{padding:11px 16px}
+    .language-btn{padding:9px 12px;display:flex;align-items:center;gap:8px}
+    .flag{width:23px;height:16px;border-radius:3px;border:1px solid rgba(0,0,0,.16);display:block;position:relative;overflow:hidden}
     
-    <!-- Navbar -->
-    <nav class="w-full bg-white dark:bg-darkcard shadow-sm p-4 flex justify-between items-center z-10 border-b border-slate-200 dark:border-slate-800">
-        <div class="text-3xl font-black text-orangefox tracking-tight flex items-baseline gap-2 cursor-pointer hover:scale-105 transition-transform" id="app-title" onclick="location.reload()">
-            <span class="text-4xl animate-bounce">🦊</span> Doki Coding <span class="text-sm font-bold text-slate-400 ml-1">(mwp)</span>
+    .icon-sun,.icon-moon{width:18px;height:18px;display:block;border-radius:50%;position:relative}
+    .icon-sun{background:#ffb300;box-shadow:0 0 0 3px rgba(255,179,0,.18)}
+    .icon-moon{background:#b4c7ff;clip-path:circle(46% at 40% 40%);filter:drop-shadow(4px 0 0 #1d2440)}
+    .shell{width:min(1120px,calc(100% - 28px));margin:auto;padding:20px 0 42px}
+    .home-hero{display:grid;grid-template-columns:1.5fr .8fr;gap:14px;margin-bottom:18px}
+    .card{background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:var(--radius)}
+    .hero-main{padding:28px;min-height:190px;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--panel),var(--panel-2))}
+    .eyebrow{text-transform:uppercase;letter-spacing:1.4px;font-size:11px;font-weight:900;color:var(--orange)}
+    .hero-main h1{margin:7px 0 9px;font-size:clamp(32px,5vw,50px);line-height:1;letter-spacing:-1.6px}
+    .hero-main p{margin:0;max-width:700px;font-weight:700;color:var(--muted);font-size:16px}
+    .creator{margin-top:14px;font-size:12px;font-weight:900;color:var(--muted)}
+    .hero-fox{position:absolute;right:24px;bottom:8px;width:145px}
+    .streak-card{padding:22px;display:flex;flex-direction:column;justify-content:space-between;min-height:190px}
+    .streak-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .streak-title{font-size:17px;font-weight:900}
+    .streak-count{font-size:48px;line-height:1;font-weight:900;color:var(--orange)}
+    .streak-caption{font-size:13px;color:var(--muted);font-weight:800}
+    .section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:18px 0 10px}
+    .section-head h2{margin:0;font-size:22px}
+    .section-head span{font-size:12px;color:var(--muted);font-weight:900}
+    .language-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+    .language-card{
+      text-align:left;min-height:132px;padding:16px;border-radius:20px;border:2px solid var(--line);
+      background:var(--panel);box-shadow:0 4px 14px rgba(0,0,0,.03);position:relative;cursor:pointer;transition:.18s
+    }
+    .language-card:hover{transform:translateY(-2px);border-color:var(--orange)}
+    .language-card.locked{cursor:not-allowed;opacity:.66}
+    .language-card.locked:hover{transform:none;border-color:var(--line)}
+    .language-icon{font-size:38px;display:block;margin-bottom:10px}
+    .language-name{font-size:17px;font-weight:900;display:block}
+    .language-meta{font-size:11px;color:var(--muted);font-weight:900;margin-top:7px}
+    .status-pill{position:absolute;top:12px;right:12px;border-radius:999px;padding:5px 8px;background:var(--panel-2);color:var(--muted);font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.5px}
+    .status-pill.ready{color:var(--orange)}
+    .notice{
+      margin-top:14px;padding:14px 16px;border:1px solid var(--line);border-radius:18px;background:var(--panel);
+      color:var(--muted);font-weight:800;font-size:13px
+    }
+    .roadmap{max-width:780px;margin:auto}
+    .path-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+    .back-btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:13px;padding:9px 12px;font-weight:900;cursor:pointer}
+    .path-title{flex:1;display:flex;align-items:center;gap:9px;font-size:22px;font-weight:900}
+    .path-title i{font-size:25px}
+    .path-progress-wrap{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;font-weight:900}
+    .progress-track{width:150px;height:10px;border-radius:999px;background:var(--line);overflow:hidden}
+    .progress-fill{height:100%;background:var(--orange);border-radius:999px;transition:width .3s}
+    .path-card{padding:18px}
+    .path{position:relative;padding:12px 0 24px}
+    .path-line{position:absolute;left:50%;top:26px;bottom:38px;width:8px;transform:translateX(-50%);background:var(--line);border-radius:999px}
+    .path-line-progress{position:absolute;left:50%;top:26px;width:8px;transform:translateX(-50%);background:var(--orange);border-radius:999px;transition:height .3s}
+    .node-row{position:relative;display:flex;justify-content:center;margin:17px 0;height:86px;align-items:center}
+    .node{
+      width:72px;height:72px;border-radius:50%;border:5px solid var(--panel);background:var(--panel-2);color:var(--muted);
+      box-shadow:0 8px 18px rgba(0,0,0,.10);display:grid;place-items:center;z-index:2;font-size:21px;font-weight:900;cursor:pointer;transition:.18s
+    }
+    .node:hover:not(.locked){transform:scale(1.05)}
+    .node.current{border-color:var(--orange);color:var(--orange);box-shadow:0 0 0 8px var(--panel-2)}
+    .node.done{background:var(--orange);color:#fff}
+    .node.locked{cursor:not-allowed;opacity:.55}
+    .node-label{position:absolute;top:32px;width:240px;font-size:11px;font-weight:900;color:var(--muted)}
+    .node-row:nth-of-type(even) .node-label{left:calc(50% + 60px)}
+    .node-row:nth-of-type(odd) .node-label{right:calc(50% + 60px);text-align:right}
+    .lesson{max-width:920px;margin:auto}
+    .lesson-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+    .lesson-top .progress-track{flex:1}
+    .lesson-count{font-size:12px;color:var(--muted);font-weight:900}
+    .lesson-card{padding:26px}
+    .lesson-type-banner{
+      display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:18px;margin-bottom:18px;
+      background:var(--panel-2);border:1px solid var(--line)
+    }
+    .type-art{width:58px;height:58px;flex:0 0 58px;border-radius:16px;background:var(--panel);display:grid;place-items:center}
+    .type-art svg{width:44px;height:44px}
+    .type-copy strong{display:block;font-size:12px;color:var(--orange);font-weight:900;text-transform:uppercase;letter-spacing:1px}
+    .type-copy span{display:block;color:var(--muted);font-weight:800;font-size:13px;margin-top:2px}
+    .fox-talk{display:grid;grid-template-columns:88px 1fr;gap:14px;align-items:center;margin-bottom:15px}
+    .fox-box{width:88px;height:88px;border-radius:26px;background:var(--panel-2);border:1px solid var(--line);display:grid;place-items:center}
+    .fox-box svg{width:66px}
+    .bubble{padding:14px 16px;border-radius:18px;background:var(--panel-2);border:1px solid var(--line);font-weight:900;line-height:1.45}
+    .bubble strong{display:block;font-size:11px;color:var(--orange);margin-bottom:4px}
+    .lesson-card h2{font-size:31px;line-height:1.05;margin:0 0 10px;letter-spacing:-1px}
+    .theory{padding:16px 17px;border-left:5px solid var(--orange);background:var(--panel-2);border-radius:15px;font-weight:700;line-height:1.65;margin-bottom:17px}
+    .question{font-size:21px;line-height:1.35;font-weight:900;margin-bottom:14px}
+    .options{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .option{
+      border:2px solid var(--line);background:var(--panel);color:var(--text);border-radius:16px;padding:15px;text-align:left;
+      font-weight:850;cursor:pointer;transition:.16s
+    }
+    .option:hover{border-color:var(--orange)}
+    .option.selected{border-color:var(--orange);background:var(--panel-2)}
+    .option.correct{border-color:var(--green);background:rgba(47,158,68,.10)}
+    .option.incorrect{border-color:var(--red);background:rgba(217,72,65,.10)}
+    .feedback{margin-top:14px;padding:14px 16px;border-radius:15px;font-weight:900}
+    .feedback.good{background:rgba(47,158,68,.10);color:var(--green)}
+    .feedback.bad{background:rgba(217,72,65,.10);color:var(--red)}
+    .actions{display:flex;gap:9px;margin-top:14px}
+    .action-btn{
+      flex:1;border:1px solid var(--line);background:var(--panel);color:var(--text);padding:14px;border-radius:15px;font-weight:900;cursor:pointer
+    }
+    .action-btn.primary{background:var(--orange);border-color:var(--orange);color:#fff}
+    .action-btn.primary:hover{background:var(--orange-dark)}
+    .footer{border-top:1px solid var(--line);padding:22px 18px 28px;text-align:center;color:var(--muted);font-size:12px;font-weight:800}.footer-legal{margin-top:6px;font-size:11px;line-height:1.5}
+    .hidden{display:none!important}
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:100;display:grid;place-items:center;padding:18px}
+    .modal-card{width:min(560px,100%);background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:var(--shadow)}
+    .modal-card h3{margin:0 0 8px;font-size:26px}.modal-card p{margin:0;color:var(--muted);line-height:1.6;font-weight:700}
+    .tour-step{padding:13px 14px;background:var(--panel-2);border:1px solid var(--line);border-radius:14px;margin:9px 0;font-weight:850}
+    .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:15px}
+    .toast{position:fixed;right:15px;bottom:15px;z-index:120;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:15px;padding:12px 15px;font-weight:900;max-width:360px}
+    @media(max-width:960px){.language-grid{grid-template-columns:repeat(3,1fr)}.home-hero{grid-template-columns:1fr}.hero-fox{opacity:.18}}
+    @media(max-width:650px){.shell{width:calc(100% - 18px)}.language-grid{grid-template-columns:repeat(2,1fr)}.options{grid-template-columns:1fr}.lesson-card{padding:20px}.fox-talk{grid-template-columns:70px 1fr}.fox-box{width:70px;height:70px}.fox-box svg{width:54px}.lesson-card h2{font-size:26px}.node-label{display:none}.path-progress-wrap{width:100%}.path-header{flex-wrap:wrap}.path-title{min-width:65%}.hero-fox{display:none}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <button class="brand" id="home-btn" aria-label="Doki Coding ana sayfa">
+      <span class="brand-mark">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <path fill="#ff7a1a" d="M11 26 18 8l14 11L46 8l7 18c1 16-9 25-21 25S10 42 11 26Z"/>
+          <path fill="#fff" d="M20 31c4-7 20-7 24 0-2 10-8 14-12 14s-10-4-12-14Z"/>
+          <circle cx="24" cy="29" r="2.8"/><circle cx="40" cy="29" r="2.8"/>
+        </svg>
+      </span>
+      <span>
+        <span class="brand-name">Doki Coding</span>
+      </span>
+    </button>
+
+    <div class="top-actions">
+      <button class="icon-btn" id="theme-btn" aria-label="Tema değiştir"></button>
+      <button class="language-btn" id="language-btn" aria-label="Arayüz dili">TR</button>
+      <button class="login-btn" id="login-btn">Giriş Yap</button>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section id="languages-view">
+      <div class="home-hero">
+        <div class="card hero-main">
+          <div class="eyebrow">MWP • local first</div>
+          <h1 id="hero-title">Kodlamayı öğren.</h1>
+          <p id="hero-subtitle">Temel seviyeden başlayarak küçük adımlarla ilerle.</p>
+          <div class="creator">Muhammed Doğukan Cengiz</div>
+
+          <div class="hero-fox" aria-hidden="true">
+            <svg viewBox="0 0 160 150">
+              <path fill="#ff7a1a" d="M30 59 39 17l38 30 44-30 9 42c1 39-23 63-51 63S29 98 30 59Z"/>
+              <path fill="#fff" d="M52 74c12-17 44-17 56 0-4 23-17 32-28 32S56 97 52 74Z"/>
+              <circle cx="67" cy="70" r="4.3"/><circle cx="93" cy="70" r="4.3"/>
+              <path d="M77 82q3 3 6 0" fill="none" stroke="#252525" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          </div>
         </div>
-        <div class="flex gap-3 items-center">
-            <button id="btn-login" class="hidden md:block text-slate-500 font-bold hover:text-orangefox px-2" onclick="alertAuth()"></button>
-            <button id="btn-signup" class="hidden md:block bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-4 py-2 rounded-xl font-bold hover:bg-slate-200" onclick="alertAuth()"></button>
-            <button id="theme-toggle" class="bg-orange-50 dark:bg-slate-800 border-2 border-orange-100 dark:border-slate-700 text-orange-600 dark:text-orange-400 p-3 rounded-2xl font-bold hover:bg-orange-100 dark:hover:bg-slate-700 transition active:scale-95">
-                🌙
-            </button>
-            <button id="lang-toggle" class="bg-orange-50 dark:bg-slate-800 border-2 border-orange-100 dark:border-slate-700 text-orange-600 dark:text-orange-400 px-6 py-3 rounded-2xl font-bold hover:bg-orange-100 dark:hover:bg-slate-700 transition active:scale-95">
-                TR / EN
-            </button>
-        </div>
-    </nav>
 
-    <!-- Main Content Area -->
-    <main class="flex-grow relative flex flex-col items-center pt-8 px-4 md:px-0 pb-10 overflow-x-hidden">
-        
-        <div id="view-languages" class="w-full max-w-4xl fade-in">
-            <h2 class="text-3xl font-black text-center mb-8" id="lang-select-title"></h2>
-            <div id="language-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+        <div class="card streak-card">
+          <div class="streak-head">
+            <span class="streak-title" id="streak-title">Günlük seri</span>
+            <span class="streak-count">0</span>
+          </div>
+          <div class="streak-caption" id="streak-caption">Seri sistemi sunucu bağlantısı geldiğinde doldurulacak.</div>
         </div>
+      </div>
 
-        <div id="view-roadmap" class="w-full max-w-md fade-in hidden relative flex flex-col items-center">
-            <div class="flex justify-between w-full mb-8 items-center bg-white dark:bg-darkcard p-4 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700">
-                <button id="back-to-langs" class="text-slate-400 hover:text-orangefox font-bold px-4 py-2">⬅</button>
-                <div class="font-black text-xl flex items-center gap-2 text-blue-500">
-                    <i class="devicon-python-plain colored text-2xl"></i> Python
-                </div>
-                <div class="w-16"></div>
-            </div>
-            <div id="roadmap-path" class="relative w-full flex flex-col items-center gap-8 py-10">
-                <div class="roadmap-line h-full top-0"></div>
-            </div>
+      <div class="section-head">
+        <h2 id="languages-title">Bir dil seç</h2>
+        <span id="languages-stats">1 açık · 9 yakında</span>
+      </div>
+
+      <div class="language-grid" id="language-grid"></div>
+
+      <div class="notice" id="language-note">
+        Python şu an aktif. Diğer diller içerikleri hazır olduğunda açılacak.
+      </div>
+    </section>
+
+    <section id="roadmap-view" class="hidden roadmap">
+      <div class="path-header">
+        <button class="back-btn" id="roadmap-back">Geri</button>
+
+        <div class="path-title">
+          <i class="devicon-python-plain colored"></i>
+          <span>Python</span>
         </div>
 
-        <div id="view-lesson" class="w-full max-w-3xl fade-in hidden">
-            <div class="flex justify-between items-center mb-6">
-                <button id="back-to-roadmap" class="text-slate-400 hover:text-red-500 font-bold text-2xl">✖</button>
-                <div class="w-3/4 bg-slate-200 dark:bg-slate-700 rounded-full h-4 p-1">
-                    <div class="bg-green-400 h-full rounded-full transition-all duration-500" id="progress-bar" style="width: 0%"></div>
-                </div>
-            </div>
-            <div class="bg-white dark:bg-darkcard rounded-[2.5rem] shadow-xl p-8 md:p-12 border border-slate-100 dark:border-slate-800" id="content-area"></div>
+        <div class="path-progress-wrap">
+          <span id="path-progress-text">0/25</span>
+          <div class="progress-track">
+            <div class="progress-fill" id="path-progress-fill" style="width:0"></div>
+          </div>
         </div>
+      </div>
 
-    </main>
+      <div class="card path-card">
+        <div class="path" id="path"></div>
+      </div>
+    </section>
 
-    <footer class="w-full text-center py-4 text-xs md:text-sm font-bold text-slate-400 dark:text-slate-500 border-t border-slate-200 dark:border-slate-800 mt-auto bg-white dark:bg-darkcard" id="app-footer">
-    </footer>
+    <section id="lesson-view" class="hidden lesson">
+      <div class="lesson-top">
+        <button class="back-btn" id="lesson-back">Geri</button>
+        <div class="progress-track">
+          <div class="progress-fill" id="lesson-progress" style="width:0"></div>
+        </div>
+        <span class="lesson-count" id="lesson-count">1/25</span>
+      </div>
 
-    <script src="data.js"></script>
-    <script src="app.js"></script>
+      <article class="card lesson-card" id="lesson-card"></article>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div>Doki Coding · Muhammed Doğukan Cengiz · MWP</div>
+    <div class="footer-legal">
+      © 2026 Doki Coding — Muhammed Doğukan Cengiz. Code licensed under the MIT License; original branding and artwork reserved.
+    </div>
+  </footer>
+
+  <div id="modal-root" class="hidden"></div>
+
+<script>
+/* =========================
+   DATA
+========================= */
+
+const I18N = {
+  tr: {
+    language: "TR",
+    title: "Kodlamayı öğren.",
+    subtitle: "Temel seviyeden başlayarak küçük adımlarla ilerle.",
+    streak: "Günlük seri",
+    streakCaption: "Seri sistemi sunucu bağlantısı geldiğinde doldurulacak.",
+    choose: "Bir dil seç",
+    python: "Python",
+    comingSoon: "Yakında",
+    active: "Aktif",
+    back: "Geri",
+    roadmap: "Yol haritası",
+    lesson: "Ders",
+    learn: "Öğren",
+    challenge: "Alıştırma",
+    theory: "Konu",
+    question: "Soru",
+    check: "Kontrol Et",
+    next: "Devam Et",
+    retry: "Tekrar Dene",
+    correct: "Doğru. Tilki sevindi.",
+    wrong: "Olmadı. Tilki biraz üzüldü; tekrar deneyelim.",
+    locked: "Önce önceki etkinliği tamamla.",
+    codeEditor: "Mini Kod Editörü",
+    run: "Çalıştır",
+    reset: "Sıfırla",
+    editorHint: "Cevabı kodla ve Çalıştır'a bas.",
+    editorSuccess: "Yerel kontrol başarılı.",
+    editorFail: "Kod henüz beklenen yapıyı karşılamıyor.",
+    localAccounts: "Hesap sistemi bu MWP sürümünde bağlı değil.",
+    languageNote: "Python şu an aktif. Diğer diller içerikleri hazır olduğunda açılacak.",
+    tutorialTitle: "Doki Coding'e hoş geldin",
+    tutorialNext: "İleri",
+    tutorialSkip: "Atla",
+    tutorialDone: "Başla",
+    pythonActivities: "25 etkinlik",
+    statsOpenAndSoon: "1 açık · 9 yakında"
+  },
+
+  en: {
+    language: "EN",
+    title: "Learn to code.",
+    subtitle: "Start from the basics and move forward one small step at a time.",
+    streak: "Daily streak",
+    streakCaption: "The streak system will be connected when the server exists.",
+    choose: "Choose a language",
+    python: "Python",
+    comingSoon: "Coming soon",
+    active: "Active",
+    back: "Back",
+    roadmap: "Roadmap",
+    lesson: "Lesson",
+    learn: "Learn",
+    challenge: "Practice",
+    theory: "Topic",
+    question: "Question",
+    check: "Check",
+    next: "Continue",
+    retry: "Try again",
+    correct: "Correct. The fox is happy.",
+    wrong: "Not yet. The fox is a little sad; let's try again.",
+    locked: "Complete the previous activity first.",
+    codeEditor: "Mini Code Editor",
+    run: "Run",
+    reset: "Reset",
+    editorHint: "Write the answer in code and press Run.",
+    editorSuccess: "Local check passed.",
+    editorFail: "The code does not match the expected structure yet.",
+    localAccounts: "Accounts are not connected in this MWP build.",
+    languageNote: "Python is active. Other languages will open when their content is ready.",
+    tutorialTitle: "Welcome to Doki Coding",
+    tutorialNext: "Next",
+    tutorialSkip: "Skip",
+    tutorialDone: "Start",
+    pythonActivities: "25 activities",
+    statsOpenAndSoon: "1 open · 9 coming soon"
+  }
+};
+
+const PYTHON = [
+  {
+    kind:"learn",
+    title:{tr:"Python nedir?",en:"What is Python?"},
+    theory:{
+      tr:"Python, okunabilir sözdizimi sayesinde yeni başlayanların programlamanın temel fikirlerine odaklanmasını kolaylaştıran genel amaçlı bir dildir. Web, otomasyon, veri ve yapay zekâ gibi alanlarda kullanılır.",
+      en:"Python is a general-purpose language with readable syntax. It is used for areas such as web development, automation, data work and AI."
+    },
+    prompt:{
+      tr:"Aşağıdakilerden hangisi Python'ı en iyi tanımlar?",
+      en:"Which statement best describes Python?"
+    },
+    options:{
+      tr:["Genel amaçlı bir programlama dili","Yalnızca bir görsel editör","Yalnızca bir işletim sistemi","Yalnızca bir veritabanı"],
+      en:["A general-purpose programming language","Only a visual editor","Only an operating system","Only a database"]
+    },
+    answer:0
+  },
+  {
+    kind:"learn",
+    title:{tr:"Python nerelerde kullanılır?",en:"Where is Python used?"},
+    theory:{
+      tr:"Python tek bir alana bağlı değildir. Otomasyon, web uygulamaları, veri analizi, bilimsel hesaplama ve yapay zekâ gibi birçok iş akışında kullanılabilir.",
+      en:"Python is not tied to one field. It can be used in automation, web applications, data analysis, scientific computing and AI."
+    },
+    prompt:{
+      tr:"Hangisi Python'ın yaygın kullanım alanlarından biridir?",
+      en:"Which is a common use of Python?"
+    },
+    options:{
+      tr:["Otomasyon","Yalnızca yazıcı sürücüsü üretmek","Yalnızca ekran tasarlamak","Yalnızca video izlemek"],
+      en:["Automation","Only building printer drivers","Only designing screens","Only watching videos"]
+    },
+    answer:0
+  },
+  {
+    kind:"learn",
+    title:{tr:"Kodun yapısı",en:"Code structure"},
+    theory:{
+      tr:"Python'da girintileme blok yapısının önemli bir parçasıdır. Okunabilir girintileme hem bilgisayarın hem de insanın kodu doğru anlamasına yardım eder.",
+      en:"Indentation is an important part of Python's block structure. Consistent indentation helps both the computer and the reader understand the code."
+    },
+    prompt:{
+      tr:"Python'da blok yapısı için hangisi özellikle önemlidir?",
+      en:"What is especially important for block structure in Python?"
+    },
+    options:{
+      tr:["Tutarlı girintileme","Rastgele boşluklar","Her satırda emoji","Dosyanın adı"],
+      en:["Consistent indentation","Random spaces","An emoji on every line","The file name"]
+    },
+    answer:0
+  },
+  {
+    kind:"learn",
+    title:{tr:"İlk çıktı",en:"First output"},
+    theory:{
+      tr:"print() fonksiyonu bir değeri veya metni konsola yazdırmak için kullanılır. Bu, öğrenirken programın ne ürettiğini görmenin en temel yollarından biridir.",
+      en:"The print() function writes a value or text to the console. It is one of the simplest ways to see what a program produces."
+    },
+    prompt:{
+      tr:"'Hello' yazısını ekrana yazdıran doğru Python kodu hangisidir?",
+      en:"Which Python code prints the text 'Hello'?"
+    },
+    options:{
+      tr:["print('Hello')","echo('Hello')","console.log('Hello')","write('Hello')"],
+      en:["print('Hello')","echo('Hello')","console.log('Hello')","write('Hello')"]
+    },
+    answer:0
+  },
+  {
+    kind:"learn",
+    title:{tr:"Değişken nedir?",en:"What is a variable?"},
+    theory:{
+      tr:"Değişken, programın bir değere isim vermesini sağlar. Python'da bir isim atama ile bir değerle ilişkilendirilebilir.",
+      en:"A variable gives a value a name so the program can refer to it later. In Python, a name can be assigned to a value."
+    },
+    prompt:{
+      tr:"score değişkenine 10 vermek için hangisi doğrudur?",
+      en:"Which correctly assigns 10 to score?"
+    },
+    options:{
+      tr:["score = 10","10 = score","score == 10","set score 10"],
+      en:["score = 10","10 = score","score == 10","set score 10"]
+    },
+    answer:0
+  },
+  {
+    kind:"challenge",
+    title:{tr:"Değişken pratiği",en:"Variable practice"},
+    theory:{
+      tr:"Bir değeri sakladıktan sonra aynı adı tekrar kullanarak programın farklı yerlerinde o değere erişebilirsin. Şimdi bunu kısa bir soruyla pekiştirelim.",
+      en:"After storing a value, you can use the same name to access it later. Let's reinforce that with a short challenge."
+    },
+    prompt:{
+      tr:"Aşağıdakilerden hangisi score değişkenindeki değeri ekrana yazdırır?",
+      en:"Which option prints the value stored in score?"
+    },
+    options:{
+      tr:["print(score)","print('score')","show score","console.log(score)"],
+      en:["print(score)","print('score')","show score","console.log(score)"]
+    },
+    answer:0
+  },
+  {
+    kind:"learn",
+    title:{tr:"Metin ve sayı",en:"Text and numbers"},
+    theory:{
+      tr:"'apple' gibi tırnak içindeki veri metindir. 42 gibi tırnaksız veri ise sayıdır. Bu ayrım işlemlerin nasıl yorumlanacağını etkiler.",
+      en:"Text such as 'apple' is a string. A value such as 42 without quotes is a number. The difference affects how operations are interpreted."
+    },
+    prompt:{
+      tr:"Hangisi bir Python string değeridir?",
+      en:"Which one is a Python string value?"
+    },
+    options:{
+      tr:["'apple'","42","3.14","True"],
+      en:["'apple'","42","3.14","True"]
+    },
+    answer:0
+  },
+  {
+    kind:"challenge",
+    title:{tr:"Matematik işlemleri",en:"Math operations"},
+    theory:{
+      tr:"Python'da + toplama, - çıkarma, * çarpma ve / bölme için kullanılır. İşlemler parantezlerle gruplanabilir.",
+      en:"In Python, + is used for addition, - for subtraction, * for multiplication and / for division. Parentheses can group operations."
+    },
+    prompt:{
+      tr:"print(3 * 4) çalıştığında hangi değer yazdırılır?",
+      en:"What value is printed by print(3 * 4)?"
+    },
+    options:{
+      tr:["12","7","34","3 * 4"],
+      en:["12","7","34","3 * 4"]
+    },
+    answer:0
+  },
+  {
+    kind:"learn",
+    title:{tr:"Karşılaştırma",en:"Comparison"},
+    theory:{
+      tr:"Karşılaştırma operatörleri iki değeri kıyaslar. == eşitliği kontrol eder, != eşit olmadığını kontrol eder; < ve > büyüklük karşılaştırır.",
+      en:"Comparison operators compare values. == checks equality, != checks inequality, and < and > compare magnitude."
+    },
+    prompt:{
+      tr:"x'in 10'a eşit olup olmadığını kontrol eden ifade hangisidir?",
+      en:"Which expression checks whether x is equal to 10?"
+    },
+    options:{
+      tr:["x == 10","x = 10","x != 10","x === 10"],
+      en:["x == 10","x = 10","x != 10","x === 10"]
+    },
+    answer:0
+  },
+  {
+    kind:"challenge",
+    title:{tr:"Koşullar",en:"Conditions"},
+    theory:{
+      tr:"if bir koşulu test eder. Koşul doğruysa ilgili blok çalışır; else ise diğer yolu tanımlayabilir.",
+      en:"if tests a condition. When the condition is true, its block runs; else can define the other path."
+    },
+    prompt:{
+      tr:"age 18 veya daha büyükse bir blok çalıştırmak için hangisi uygundur?",
+      en:"Which is appropriate when a block should run if age is 18 or greater?"
+    },
+    options:{
+      tr:["if age >= 18:","if age = 18:","when age > 18","check age 18"],
+      en:["if age >= 18:","if age = 18:","when age > 18","check age 18"]
+    },
+    answer:0
+  },
+  {
+    kind:"learn",
+    title:{tr:"Döngüler",en:"Loops"},
+    theory:{
+      tr:"Döngüler aynı türden işi tekrar tekrar yapmak için kullanılır. for bir koleksiyon üzerinde dolaşmak için, while ise bir koşul doğru olduğu sürece çalışmak için sık kullanılır.",
+      en:"Loops repeat work. for is commonly used to iterate over a collection, while runs while a condition stays true."
+    },
+    prompt:{
+      tr:"Bir listedeki elemanların her biri üzerinde dolaşmak için yaygın seçenek hangisidir?",
+      en:"Which is a common way to iterate over each item in a list?"
+    },
+    options:{
+      tr:["for","if","def","import"],
+      en:["for","if","def","import"]
+    },
+    answer:0
+  },
+  {
+    kind:"challenge",
+    title:{tr:"for döngüsü",en:"for loop"},
+    theory:{
+      tr:"for döngüsü, listedeki her eleman için aynı kod bloğunu çalıştırabilir. Döngü değişkeninin adı okunabilir olmalıdır.",
+      en:"A for loop can run the same block for each item in a list. The loop variable should have a clear name."
+    },
+    prompt:{
+      tr:"items listesindeki her item için print(item) çalıştıran kod hangisidir?",
+      en:"Which code runs print(item) for every item in items?"
+    },
+    options:{
+      tr:["for item in items:","for items = item:","loop item from items","each item(items)"],
+      en:["for item in items:","for items = item:","loop item from items","each item(items)"]
+    },
+    answer:0
+  },
+  {
+    kind:"learn",
+    title:{tr:"Fonksiyonlar",en:"Functions"},
+    theory:{
+      tr:"Fonksiyonlar tekrar kullanılabilen bir işi isimlendirir. Python'da def ile tanımlanır ve çağrıldığında içindeki kod çalışır.",
+      en:"Functions give a reusable piece of work a name. In Python they are defined with def and run when called."
+    },
+    prompt:{
+      tr:"hello adlı bir fonksiyon tanımlamak için hangi başlangıç doğrudur?",
+      en:"Which starts a function definition named hello?"
+    },
+    options:{
+      tr:["def hello():","function hello()","fn hello()","make hello()"],
+      en:["def hello():","function hello()","fn hello()","make hello()"]
+    },
+    answer:0
+  },
+  {
+    kind:"challenge",
+    title:{tr:"return kullanımı",en:"Using return"},
+    theory:{
+      tr:"return, bir fonksiyonun hesapladığı sonucu çağıran koda geri göndermek için kullanılır. Böylece fonksiyon sonucu başka bir yerde kullanılabilir.",
+      en:"return sends a function's computed result back to the calling code so that result can be used elsewhere."
+    },
+    prompt:{
+      tr:"İki sayının toplamını geri gönderen doğru fonksiyon hangisidir?",
+      en:"Which function correctly returns the sum of two numbers?"
+    },
+    options:{
+      tr:[
+        "def add(a, b):\\n    return a + b",
+        "def add(a, b):\\n    print(a + b)",
+        "def add(a, b):\\n    a + b",
+        "return add(a, b)"
+      ],
+      en:[
+        "def add(a, b):\\n    return a + b",
+        "def add(a, b):\\n    print(a + b)",
+        "def add(a, b):\\n    a + b",
+        "return add(a, b)"
+      ]
+    },
+    answer:0
+  },
+  {
+    kind:"learn",
+    title:{tr:"Listeler",en:"Lists"},
+    theory:{
+      tr:"Liste birden fazla değeri sıralı olarak tutabilir. Örneğin colors = ['red', 'blue'] iki string değerini tek yapıda saklar.",
+      en:"A list stores multiple values in order. For example, colors = ['red', 'blue'] stores two strings in one structure."
+    },
+    prompt:{
+      tr:"İki öğeli bir liste hangisidir?",
+      en:"Which is a two-item Python list?"
+    },
+    options:{
+      tr:["['red', 'blue']","('red', 'blue')","{'red', 'blue'}","<red, blue>"],
+      en:["['red', 'blue']","('red', 'blue')","{'red', 'blue'}","<red, blue>"]
+    },
+    answer:0
+  },
+  {
+    kind:"challenge",
+    title:{tr:"Liste elemanına erişim",en:"Accessing a list item"},
+    theory:{
+      tr:"Python listelerinde indeksler 0'dan başlar. Bu yüzden colors[0], ilk elemana erişir.",
+      en:"Python list indexes start at 0. So colors[0] accesses the first item."
+    },
+    prompt:{
+      tr:"colors = ['red', 'blue'] ise ilk elemana hangisiyle erişilir?",
+      en:"If colors = ['red', 'blue'], how do you access the first item?"
+    },
+    options:{
+      tr:["colors[0]","colors[1]","colors.first","colors(0)"],
+      en:["colors[0]","colors[1]","colors.first","colors(0)"]
+    },
+    answer:0
+  },
+  {
+    kind:"learn",
+    title:{tr:"Kullanıcıdan veri almak",en:"Reading input"},
+    theory:{
+      tr:"input() kullanıcıdan metin almak için kullanılabilir. Dönen değer string olduğundan, sayı gerekiyorsa dönüşüm düşünülmelidir.",
+      en:"input() can read text from the user. Its result is a string, so conversion should be considered when a number is required."
+    },
+    prompt:{
+      tr:"Kullanıcıdan metin almak için hangisi kullanılır?",
+      en:"Which is used to read text from the user?"
+    },
+    options:{
+      tr:["input()","readline() by default","scan()","ask()"],
+      en:["input()","readline() by default","scan()","ask()"]
+    },
+    answer:0
+  },
+  {
+    kind:"challenge",
+    title:{tr:"Veri türü dönüşümü",en:"Type conversion"},
+    theory:{
+      tr:"Bir string sayı üzerinde matematik yapmak için int() gibi dönüşümler kullanılabilir. Önemli olan girdinin ne olduğuna göre doğru türü seçmektir.",
+      en:"A string containing a number can be converted with int() when arithmetic is needed. The conversion should match the intended data type."
+    },
+    prompt:{
+      tr:"'42' metnini tam sayıya dönüştüren ifade hangisidir?",
+      en:"Which converts the text '42' to an integer?"
+    },
+    options:{
+      tr:["int('42')","str(42)","number('42')","floatText('42')"],
+      en:["int('42')","str(42)","number('42')","floatText('42')"]
+    },
+    answer:0
+  },
+  {
+    kind:"learn",
+    title:{tr:"Hata ayıklama",en:"Debugging"},
+    theory:{
+      tr:"Hata ayıklamak için problemi küçük bir örneğe indirmek, değişkenleri ve ara sonuçları kontrol etmek iyi bir başlangıçtır. Rastgele değişiklik yapmak yerine tek bir hipotezi test etmek daha güvenlidir.",
+      en:"A good debugging start is to reduce the problem, inspect values and intermediate results, and test one hypothesis at a time rather than making random changes."
+    },
+    prompt:{
+      tr:"İyi bir ilk hata ayıklama adımı hangisidir?",
+      en:"What is a good first debugging step?"
+    },
+    options:{
+      tr:["Problemi küçük bir örnekte izole etmek","Rastgele satırları değiştirmek","Hatanın üstünü kapatmak","Bütün dosyayı silmek"],
+      en:["Isolate the problem in a small example","Change random lines","Hide the error","Delete the whole file"]
+    },
+    answer:0
+  },
+  {
+    kind:"challenge",
+    title:{tr:"Okunabilir kod",en:"Readable code"},
+    theory:{
+      tr:"İyi kod yalnızca çalışmaz; okunması da kolaydır. Açık isimler, tutarlı girintileme ve gereksiz tekrarları azaltmak bakım kolaylığını artırır.",
+      en:"Good code is not only correct; it is readable. Clear names, consistent indentation and less unnecessary repetition improve maintainability."
+    },
+    prompt:{
+      tr:"Hangisi okunabilirliği daha çok artırır?",
+      en:"Which improves readability the most?"
+    },
+    options:{
+      tr:["total_score = 10 gibi açık isimler","x1a9 gibi anlamsız isimler","Rastgele girintileme","Aynı kodu gereksiz yere tekrar etmek"],
+      en:["Clear names such as total_score = 10","Meaningless names such as x1a9","Random indentation","Unnecessary repetition"]
+    },
+    answer:0
+  },
+  {
+    kind:"learn",
+    title:{tr:"Kod okuma",en:"Reading code"},
+    theory:{
+      tr:"Bir kodu okurken değişkenlerin aldığı değerleri, koşulların hangi yolu seçtiğini ve fonksiyonların ne döndürdüğünü sırayla takip etmek faydalıdır.",
+      en:"When reading code, track variable values, which branches conditions choose, and what functions return."
+    },
+    prompt:{
+      tr:"Kod okurken ilk olarak neyi izlemek faydalıdır?",
+      en:"What is useful to track while reading code?"
+    },
+    options:{
+      tr:["Değerler ve akış","Yalnızca dosya adı","Yalnızca renkler","Yalnızca yazı tipi"],
+      en:["Variable values and control flow","Only the file name","Only colors","Only the font"]
+    },
+    answer:0
+  },
+  {
+    kind:"challenge",
+    title:{tr:"Mini algoritma",en:"Tiny algorithm"},
+    theory:{
+      tr:"Algoritma, bir problemi çözmek için izlenen adımların düzenidir. Küçük programlarda bile girdi, işlem ve çıktı sırasını açıkça düşünmek gerekir.",
+      en:"An algorithm is an ordered set of steps for solving a problem. Even in small programs, think clearly about input, processing and output."
+    },
+    prompt:{
+      tr:"İki sayının büyüğünü yazdırmak için hangi temel yaklaşım uygundur?",
+      en:"Which basic approach is suitable for printing the larger of two numbers?"
+    },
+    options:{
+      tr:["Bir koşulla iki değeri karşılaştırmak","Her zaman ilk değeri yazdırmak","Rastgele bir sayı seçmek","Değerleri metne çevirmek"],
+      en:["Compare the two values with a condition","Always print the first value","Choose a random number","Convert the values to text"]
+    },
+    answer:0
+  },
+  {
+    kind:"learn",
+    title:{tr:"Düzenli pratik",en:"Consistent practice"},
+    theory:{
+      tr:"Kodlamayı öğrenirken küçük ama düzenli pratik, büyük ve düzensiz çalışmadan genellikle daha sürdürülebilirdir. Her etkinlikte küçük bir şeyi gerçekten anlamaya odaklan.",
+      en:"Small, consistent practice is more sustainable than large, irregular sessions. Aim to genuinely understand one small concept in each activity."
+    },
+    prompt:{
+      tr:"İyi bir öğrenme rutini hangisidir?",
+      en:"Which is a strong learning routine?"
+    },
+    options:{
+      tr:["Küçük bir konu öğren, dene, sonucu kontrol et","Hiç çalışmadan hepsini ezberle","Hataları hiç inceleme","Sadece uzun kodlar yaz"],
+      en:["Learn a small idea, try it, and inspect the result","Memorize everything without practice","Never inspect mistakes","Only write long programs"]
+    },
+    answer:0
+  },
+  {
+    kind:"challenge",
+    title:{tr:"Sözlükler",en:"Dictionaries"},
+    theory:{
+      tr:"Sözlükler anahtar ve değer çiftlerini isimlerle ilişkilendirir. Örneğin user = {'name': 'Ada'} ifadesinde name bir anahtardır.",
+      en:"Dictionaries associate keys with values. For example, user = {'name': 'Ada'} uses name as a key."
+    },
+    prompt:{
+      tr:"user = {'name': 'Ada'} ise name değerine hangisiyle erişilir?",
+      en:"If user = {'name': 'Ada'}, how do you access the name value?"
+    },
+    options:{
+      tr:["user['name']","user.name()","user(name)","user->name"],
+      en:["user['name']","user.name()","user(name)","user->name"]
+    },
+    answer:0
+  },
+  {
+    kind:"learn",
+    title:{
+      tr:"Tebrikler! Temel Seviye Bitti 🎉",
+      en:"Congratulations! Basic Level Completed 🎉"
+    },
+    theory:{
+      tr:"Harika bir iş çıkardın! Temel seviye Python eğitimini başarıyla tamamladın. Artık küçük programlar yazabilir, değişkenleri ve döngüleri kullanabilirsin.",
+      en:"Great job! You have successfully completed the basic Python training. You can now write small programs, use variables, and loops."
+    },
+    prompt:{
+      tr:"Tebrikler başarı ile temel seviye Python bitti! Hangi seçeneği seçersen seç kutlamayı geçebilirsin:",
+      en:"Congratulations, basic level Python is successfully completed! You can proceed no matter which option you choose:"
+    },
+    options:{
+      tr:[
+        "Harika, hazırım! Devam et",
+        "Hepsini öğrendim, bitir",
+        "Mükemmel bir deneyimdi",
+        "Sıradaki seviyeye geçelim"
+      ],
+      en:[
+        "Awesome, I'm ready! Continue",
+        "Learned everything, finish",
+        "It was a great experience",
+        "Let's move to the next level"
+      ]
+    },
+    // Tüm seçenekleri doğru kabul ediyoruz (herhangi biri seçildiğinde doğru sayılacak)
+    allCorrect: true
+  }
+];
+
+const LANGUAGES = [
+  {id:"python",name:"Python",icon:"devicon-python-plain",ready:true},
+  {id:"javascript",name:"JavaScript",icon:"devicon-javascript-plain",ready:false},
+  {id:"typescript",name:"TypeScript",icon:"devicon-typescript-plain",ready:false},
+  {id:"c",name:"C",icon:"devicon-c-plain",ready:false},
+  {id:"cpp",name:"C++",icon:"devicon-cplusplus-plain",ready:false},
+  {id:"csharp",name:"C#",icon:"devicon-csharp-plain",ready:false},
+  {id:"go",name:"Go",icon:"devicon-go-plain",ready:false},
+  {id:"sql",name:"SQL",icon:"devicon-azuresqldatabase-plain",ready:false},
+  {id:"bash",name:"Bash",icon:"devicon-bash-plain",ready:false},
+  {id:"lua",name:"Lua",icon:"devicon-lua-plain",ready:false}
+];
+
+/* =========================
+   APP
+========================= */
+
+let lang = localStorage.getItem("doki_lang") || "tr";
+let theme = localStorage.getItem("doki_theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+let view = "languages";
+let lessonIndex = 0;
+let selectedAnswer = null;
+let answered = false;
+let currentQuizOptions = null;
+
+const $ = (id) => document.getElementById(id);
+
+document.documentElement.classList.toggle("dark", theme === "dark");
+
+function t(key){
+  return I18N[lang][key] ?? I18N.tr[key] ?? key;
+}
+
+function progress(){
+  return Number(localStorage.getItem("doki_python_progress") || 0);
+}
+
+function saveProgress(n){
+  localStorage.setItem("doki_python_progress", String(Math.max(0,Math.min(25,n))));
+}
+
+function escapeHtml(value){
+  return String(value).replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[c]));
+}
+
+let audioContext = null;
+
+function playSound(type){
+  try{
+    const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
+    if(!AudioContextCtor) return;
+
+    audioContext ||= new AudioContextCtor();
+
+    if(audioContext.state === "suspended"){
+      audioContext.resume();
+    }
+
+    const now = audioContext.currentTime;
+
+    if(type === "click"){
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(520, now);
+      osc.frequency.exponentialRampToValueAtTime(620, now + 0.06);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.045, now + 0.012);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+
+      osc.connect(gain);
+      gain.connect(audioContext.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.08);
+      return;
+    }
+
+    if(type === "soft"){
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(260, now);
+      osc.frequency.exponentialRampToValueAtTime(310, now + 0.07);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.035, now + 0.012);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.10);
+
+      osc.connect(gain);
+      gain.connect(audioContext.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.10);
+      return;
+    }
+
+    if(type === "unlock"){
+      [392, 523.25, 659.25, 783.99].forEach((frequency, index)=>{
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        const start = now + index * 0.10;
+
+        osc.type = "sine";
+        osc.frequency.value = frequency;
+
+        gain.gain.setValueAtTime(0.0001, start);
+        gain.gain.exponentialRampToValueAtTime(0.08, start + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.18);
+
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+
+        osc.start(start);
+        osc.stop(start + 0.19);
+      });
+      return;
+    }
+
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    const wobble = audioContext.createOscillator();
+    const wobbleGain = audioContext.createGain();
+    const correct = type === "correct";
+
+    osc.type = "sine";
+    osc.frequency.value = correct ? 105 : 78;
+    wobble.frequency.value = correct ? 13 : 9;
+    wobbleGain.gain.value = correct ? 7 : 4;
+
+    wobble.connect(wobbleGain);
+    wobbleGain.connect(osc.frequency);
+    osc.connect(gain);
+    gain.connect(audioContext.destination);
+
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(
+      correct ? 0.12 : 0.075,
+      now + 0.05
+    );
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.48);
+
+    osc.start(now);
+    wobble.start(now);
+    osc.stop(now + 0.48);
+    wobble.stop(now + 0.48);
+
+  }catch(_){}
+}
+
+function foxSvg(){
+  return `
+    <svg viewBox="0 0 80 80" aria-hidden="true">
+      <path fill="#ff7a1a" d="M14 34 19 10l19 15L61 10l5 24c1 19-11 31-26 31S13 53 14 34Z"/>
+      <path fill="#fff" d="M25 41c8-10 22-10 30 0-2 12-8 17-15 17S27 53 25 41Z"/>
+      <circle cx="34" cy="39" r="2.6"/><circle cx="46" cy="39" r="2.6"/>
+      <path d="M38 47q2 2 4 0" fill="none" stroke="#252525" stroke-width="2.2" stroke-linecap="round"/>
+    </svg>
+  `;
+}
+
+function lessonArt(kind){
+  if(kind==="learn"){
+    return `
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path fill="#ff7a1a" d="M8 11h32v26H8z"/>
+        <path fill="#fff4ec" d="M12 15h11MWP8H12zM25 15h11MWP8H25z"/>
+        <path stroke="#ff7a1a" stroke-width="2" d="M14 19h7M14 23h7M27 19h7M27 23h7"/>
+      </svg>
+    `;
+  }
+
+  return `
+    <svg viewBox="0 0 48 48" aria-hidden="true">
+      <path fill="#ff7a1a" d="M24 5 28 17l12 4-12 4-4 13-4-13-12-4 12-4z"/>
+      <path fill="#fff4ec" d="M24 14l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/>
+    </svg>
+  `;
+}
+
+function applyStatic(){
+  document.documentElement.lang = lang === "tr" ? "tr" : "en";
+
+  $("hero-title").textContent = t("title");
+  $("hero-subtitle").textContent = t("subtitle");
+  $("streak-title").textContent = t("streak");
+  $("streak-caption").textContent = t("streakCaption");
+  $("languages-title").textContent = t("choose");
+  $("languages-stats").textContent = t("statsOpenAndSoon");
+  $("language-note").textContent = t("languageNote");
+
+  $("theme-btn").innerHTML =
+    theme === "dark"
+      ? '<span class="icon-sun" aria-hidden="true"></span>'
+      : '<span class="icon-moon" aria-hidden="true"></span>';
+
+  $("language-btn").textContent = lang === "tr" ? "TR" : "EN";
+
+  $("login-btn").textContent =
+    lang === "tr" ? "Giriş Yap" : "Log In";
+}
+
+function show(name){
+  view = name;
+
+  $("languages-view").classList.toggle("hidden",name!=="languages");
+  $("roadmap-view").classList.toggle("hidden",name!=="roadmap");
+  $("lesson-view").classList.toggle("hidden",name!=="lesson");
+
+  applyStatic();
+
+  if(name==="languages") renderLanguages();
+  if(name==="roadmap") renderRoadmap();
+  if(name==="lesson") renderLesson();
+}
+
+function renderLanguages(){
+  const grid = $("language-grid");
+  grid.innerHTML = "";
+
+  LANGUAGES.forEach(item=>{
+    const button = document.createElement("button");
+    button.className = `language-card${item.ready ? "" : " locked"}`;
+
+    button.innerHTML = `
+      <span class="status-pill ${item.ready ? "ready" : ""}">
+        ${item.ready ? t("active") : t("comingSoon")}
+      </span>
+
+      <i class="${item.icon} colored language-icon"></i>
+
+      <span class="language-name">
+        ${escapeHtml(item.name)}
+      </span>
+
+      <span class="language-meta">
+        ${item.ready ? t("pythonActivities") : t("comingSoon")}
+      </span>
+    `;
+
+    button.onclick = ()=>{
+      if(!item.ready){
+        playSound("wrong");
+        toast(lang==="tr"
+          ? `${item.name}: ${t("comingSoon")}`
+          : `${item.name}: ${t("comingSoon")}`
+        );
+        return;
+      }
+
+      playSound("click");
+      lessonIndex = Math.min(progress(),24);
+      show("roadmap");
+    };
+
+    grid.appendChild(button);
+  });
+}
+
+function renderRoadmap(){
+  const current = progress();
+
+  $("path-progress-text").textContent = `${current}/25`;
+  $("path-progress-fill").style.width = `${current/25*100}%`;
+
+  const path = $("path");
+  path.innerHTML = `
+    <div class="path-line"></div>
+    <div class="path-line-progress" style="height:${Math.max(0,current*103)}px"></div>
+  `;
+
+  PYTHON.forEach((item,index)=>{
+    const row = document.createElement("div");
+    row.className = "node-row";
+
+    const button = document.createElement("button");
+    const unlocked = index <= current;
+    const done = index < current;
+    const active = index === current;
+
+    button.className = "node";
+
+    if(done) button.classList.add("done");
+    if(active) button.classList.add("current");
+    if(!unlocked) button.classList.add("locked");
+
+    button.textContent = String(index+1);
+
+    const label = document.createElement("span");
+    label.className = "node-label";
+
+    const typeName = item.kind === "learn"
+      ? t("learn")
+      : t("challenge");
+
+    label.textContent =
+      `${index+1}. ${item.title[lang]} · ${typeName}`;
+
+    button.onclick = ()=>{
+      if(!unlocked){
+        playSound("wrong");
+        toast(t("locked"));
+        return;
+      }
+
+      playSound("click");
+      lessonIndex = index;
+      show("lesson");
+    };
+
+    row.append(button,label);
+    path.appendChild(row);
+  });
+}
+
+function renderLesson(){
+  const item = PYTHON[lessonIndex];
+  const current = progress();
+
+  selectedAnswer = null;
+  answered = false;
+
+  $("lesson-count").textContent =
+    `${lessonIndex+1}/25`;
+
+  $("lesson-back").textContent = t("back");
+
+  $("lesson-progress").style.width =
+    `${((lessonIndex+1)/25)*100}%`;
+
+  const typeName =
+    item.kind === "learn"
+      ? t("learn")
+      : t("challenge");
+
+  const foxText =
+    item.kind === "challenge"
+      ? (lang==="tr"
+          ? "Bunu birlikte deneyelim. Cevabını seç ve kontrol et."
+          : "Let's work through this together. Choose an answer and check it.")
+      : (lang==="tr"
+          ? "Önce konuyu anlayalım. Hazırsan küçük bir adım atalım."
+          : "Let's understand the idea first. Then we'll take a small step.");
+
+  let html = `
+    <div class="lesson-type-banner">
+      <div class="type-art">
+        ${lessonArt(item.kind)}
+      </div>
+      <div class="type-copy">
+        <strong>${typeName}</strong>
+        <span>${item.kind==="learn" ? t("theory") : t("question")}</span>
+      </div>
+    </div>
+
+    <div class="fox-talk">
+      <div class="fox-box">${foxSvg()}</div>
+      <div class="bubble">
+        <strong>Doğukan'ın tilkisi</strong>
+        ${escapeHtml(foxText)}
+      </div>
+    </div>
+
+    <h2>${escapeHtml(item.title[lang])}</h2>
+    <div class="theory">${escapeHtml(item.theory[lang])}</div>
+  `;
+
+  currentQuizOptions = item.options[lang]
+    .map((text, originalIndex) => ({
+      text,
+      correct: item.allCorrect ? true : (originalIndex === item.answer)
+    }))
+    .sort(() => item.allCorrect ? 0 : Math.random() - 0.5);
+
+  html += `
+    <div class="question">
+      ${escapeHtml(item.prompt[lang])}
+    </div>
+
+    <div class="options">
+      ${currentQuizOptions.map((option,i)=>`
+        <button class="option" data-index="${i}" id="option-${i}">
+          ${escapeHtml(option.text).replace(/\n/g,"<br>")}
+        </button>
+      `).join("")}
+    </div>
+
+    <div id="feedback" class="feedback hidden"></div>
+
+    <div class="actions">
+      <button class="action-btn primary" id="check-answer">
+        ${t("check")}
+      </button>
+      <button class="action-btn" id="lesson-back-bottom">
+        ${t("back")}
+      </button>
+    </div>
+  `;
+
+  $("lesson-card").innerHTML = html;
+
+  wireQuiz(item, currentQuizOptions);
+}
+
+function wireQuiz(item, options = currentQuizOptions){
+  document.querySelectorAll(".option").forEach(button=>{
+    button.onclick = ()=>{
+      if(answered) return;
+
+      selectedAnswer =
+        Number(button.dataset.index);
+
+      document.querySelectorAll(".option")
+        .forEach(b=>b.classList.remove("selected"));
+
+      button.classList.add("selected");
+
+      playSound("click");
+    };
+  });
+
+  $("check-answer").onclick = ()=>{
+    if(selectedAnswer===null){
+      toast(lang==="tr" ? "Önce bir cevap seç." : "Choose an answer first.");
+      return;
+    }
+
+    answered = true;
+
+    const correct =
+      Boolean(options[selectedAnswer] && options[selectedAnswer].correct);
+
+    const buttons =
+      [...document.querySelectorAll(".option")];
+
+
+    const feedback =
+      $("feedback");
+
+    if(correct){
+      buttons[selectedAnswer].classList.add("correct");
+
+      feedback.className = "feedback good";
+      feedback.textContent = t("correct");
+
+      playSound("correct");
+
+      unlockNext();
+    }else{
+      buttons[selectedAnswer].classList.add("incorrect");
+
+      feedback.className = "feedback bad";
+      feedback.textContent = lang === "tr"
+        ? "Tekrar düşün. Cevabı bulana kadar doğru seçeneği göstermeyeceğim."
+        : "Think again. I won't reveal the answer until you find it.";
+
+      playSound("wrong");
+
+      $("check-answer").textContent = t("retry");
+
+      $("check-answer").onclick = ()=>{
+        selectedAnswer = null;
+        answered = false;
+
+        document.querySelectorAll(".option").forEach(button=>{
+          button.classList.remove("selected","incorrect");
+        });
+
+        feedback.className = "feedback hidden";
+        $("check-answer").textContent = t("check");
+        wireQuiz(item);
+      };
+    }
+  };
+
+  $("lesson-back-bottom").onclick =
+    ()=>show("roadmap");
+}
+
+function unlockNext(){
+  const next = lessonIndex + 1;
+
+  if(next > progress()){
+    saveProgress(next);
+    playSound("unlock");
+  }
+
+  const button = $("check-answer");
+
+  button.textContent =
+    next >= 25 ? "Tamamlandı" : t("next");
+
+  button.onclick = ()=>{
+    if(next >= 25){
+      show("roadmap");
+      toast(lang==="tr" ? "Python yolu tamamlandı." : "Python path completed.");
+      return;
+    }
+
+    lessonIndex = next;
+    show("lesson");
+  };
+}
+
+function toast(message){
+  const element = document.createElement("div");
+  element.className = "toast";
+  element.textContent = message;
+
+  document.body.appendChild(element);
+
+  setTimeout(()=>element.remove(),2600);
+}
+
+function openTutorial(force=false){
+  if(
+    !force &&
+    localStorage.getItem("doki_tour_done")==="1"
+  ) return;
+
+  let step = 0;
+
+  const root = $("modal-root");
+  root.className = "";
+
+  root.innerHTML = `
+    <div class="modal">
+      <div class="modal-card">
+        <h3>${t("tutorialTitle")}</h3>
+        <p>${t("subtitle")}</p>
+
+        <div id="tour-list"></div>
+
+        <div class="modal-actions">
+          <button class="back-btn" id="tour-skip">${t("tutorialSkip")}</button>
+          <button class="action-btn primary" id="tour-next">${t("tutorialNext")}</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const steps = lang==="tr"
+    ? [
+        "Python kartına tıklayarak aktif yolu aç.",
+        "Yol haritasında 1. etkinlikten başlayıp sırayla ilerle.",
+        "Bir etkinliği tamamladığında sonraki numaranın kilidi açılır.",
+        "Tebrikler başarı ile temel seviye Python bitti!"
+      ]
+    : [
+        "Click Python to open the active path.",
+        "Start at activity 1 and move forward in order.",
+        "Completing an activity unlocks the next number.",
+        "Congratulations, basic level Python is successfully completed!"
+      ];
+
+  function paint(){
+    $("tour-list").innerHTML =
+      steps.map((item,i)=>`
+        <div class="tour-step" style="opacity:${i===step ? 1 : .52}">
+          <strong>${i+1}.</strong> ${escapeHtml(item)}
+        </div>
+      `).join("");
+
+    $("tour-next").textContent =
+      step===steps.length-1
+        ? t("tutorialDone")
+        : t("tutorialNext");
+  }
+
+  paint();
+
+  $("tour-skip").onclick = ()=>{
+    localStorage.setItem("doki_tour_done","1");
+    root.className = "hidden";
+  };
+
+  $("tour-next").onclick = ()=>{
+    if(step < steps.length-1){
+      step++;
+      paint();
+    }else{
+      localStorage.setItem("doki_tour_done","1");
+      root.className = "hidden";
+    }
+  };
+}
+
+/* =========================
+   GLOBAL EVENTS
+========================= */
+
+$("home-btn").onclick = ()=>{
+  playSound("click");
+  show("languages");
+};
+
+$("roadmap-back").onclick = ()=>{
+  playSound("click");
+  show("languages");
+};
+
+$("lesson-back").onclick = ()=>{
+  playSound("click");
+  show("roadmap");
+};
+
+$("theme-btn").onclick = ()=>{
+  playSound("click");
+  theme = theme==="dark" ? "light" : "dark";
+  localStorage.setItem("doki_theme",theme);
+  document.documentElement.classList.toggle("dark",theme==="dark");
+  applyStatic();
+};
+
+$("language-btn").onclick = ()=>{
+  playSound("click");
+  lang = lang==="tr" ? "en" : "tr";
+  localStorage.setItem("doki_lang",lang);
+  show(view);
+};
+
+$("login-btn").onclick = ()=>{
+  playSound("click");
+  toast(t("localAccounts"));
+};
+
+/* =========================
+   START
+========================= */
+
+applyStatic();
+show("languages");
+
+setTimeout(()=>{
+  openTutorial(false);
+},350);
+</script>
 </body>
 </html>
