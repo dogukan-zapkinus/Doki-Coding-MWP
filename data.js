@@ -1,4 +1,3 @@
-// --- Dil Destekleri (i18n) ---
 const i18n = {
     en: {
         check: "CHECK",
@@ -8,7 +7,12 @@ const i18n = {
         completed: "Course Completed!",
         restart: "RESTART",
         progress: "COURSE PROGRESS",
-        lockedMsg: "This language is locked right now."
+        lockedMsg: "This language is locked right now.",
+        comingSoon: "Coming Soon",
+        login: "Log In",
+        signup: "Sign Up",
+        chooseLang: "Choose a Language",
+        footerText: "© 2026 Doki Coding. Made by Muhammed Doğukan Cengiz. Licensed under MIT."
     },
     tr: {
         check: "KONTROL ET",
@@ -18,33 +22,33 @@ const i18n = {
         completed: "Kurs Tamamlandı!",
         restart: "BAŞA DÖN",
         progress: "KURS İLERLEMESİ",
-        lockedMsg: "Bu dil şu an kilitli."
+        lockedMsg: "Bu dil şu an kilitli.",
+        comingSoon: "Yakında",
+        login: "Giriş Yap",
+        signup: "Kayıt Ol",
+        chooseLang: "Bir Dil Seç",
+        footerText: "© 2026 Doki Coding. Muhammed Doğukan Cengiz tarafından yapılmıştır. MIT Lisansı altındadır."
     }
 };
 
-// --- Ana Sayfa Dil Seçenekleri ---
 const availableLanguages = [
-    { id: "python", name: "Python", icon: "devicon-python-plain", locked: false, color: "text-blue-500" },
-    { id: "javascript", name: "JavaScript", icon: "devicon-javascript-plain", locked: true, color: "text-yellow-400" },
-    { id: "typescript", name: "TypeScript", icon: "devicon-typescript-plain", locked: true, color: "text-blue-600" },
-    { id: "c", name: "C", icon: "devicon-c-plain", locked: true, color: "text-indigo-600" },
-    { id: "cpp", name: "C++", icon: "devicon-cplusplus-plain", locked: true, color: "text-blue-700" },
-    { id: "csharp", name: "C#", icon: "devicon-csharp-plain", locked: true, color: "text-purple-600" },
-    { id: "go", name: "Go", icon: "devicon-go-plain", locked: true, color: "text-cyan-500" },
-    { id: "sql", name: "SQL", icon: "devicon-azuresqldatabase-plain", locked: true, color: "text-slate-500" },
-    { id: "bash", name: "Bash/Shell", icon: "devicon-bash-plain", locked: true, color: "text-slate-800 dark:text-slate-200" },
-    { id: "lua", name: "Lua", icon: "devicon-lua-plain", locked: true, color: "text-indigo-500" }
+    { id: "python", name: "Python", icon: "devicon-python-plain", locked: false },
+    { id: "javascript", name: "JavaScript", icon: "devicon-javascript-plain", locked: true },
+    { id: "typescript", name: "TypeScript", icon: "devicon-typescript-plain", locked: true },
+    { id: "c", name: "C", icon: "devicon-c-plain", locked: true },
+    { id: "cpp", name: "C++", icon: "devicon-cplusplus-plain", locked: true },
+    { id: "csharp", name: "C#", icon: "devicon-csharp-plain", locked: true },
+    { id: "go", name: "Go", icon: "devicon-go-plain", locked: true },
+    { id: "sql", name: "SQL", icon: "devicon-azuresqldatabase-plain", locked: true },
+    { id: "bash", name: "Bash", icon: "devicon-bash-plain", locked: true },
+    { id: "lua", name: "Lua", icon: "devicon-lua-plain", locked: true }
 ];
 
-// --- Python 10 Adımlık Yol Haritası (Ders 1 - Test 1 formatı) ---
 const pythonRoadmap = [
     {
         type: "lesson",
         title: { en: "Lesson 1: What is Python?", tr: "Ders 1: Python Nedir?" },
-        theory: { 
-            en: "Python is a very popular, easy-to-read programming language. It is used in AI, web development, and data science.", 
-            tr: "Python, okunması çok kolay ve dünyanın en popüler yazılım dillerinden biridir. Yapay zeka, web siteleri ve veri biliminde kullanılır." 
-        },
+        theory: { en: "Python is a very popular, easy-to-read programming language. It is used in AI, web development, and data science.", tr: "Python, okunması çok kolay ve dünyanın en popüler yazılım dillerinden biridir. Yapay zeka, web siteleri ve veri biliminde kullanılır." },
         question: { en: "What is Python mainly known for?", tr: "Python en çok hangi özelliği ile bilinir?" },
         options: ["Zor okunması", "Sadece oyun yapılması", "Kolay okunabilir olması", "Sadece hesap makinesi olması"],
         correctAnswerIndex: 2
@@ -60,10 +64,7 @@ const pythonRoadmap = [
     {
         type: "lesson",
         title: { en: "Lesson 2: Print Function", tr: "Ders 2: Ekrana Yazdırma" },
-        theory: { 
-            en: "To show a message on the screen in Python, we use the `print()` command.", 
-            tr: "Python'da ekrana bir yazı veya sonuç yazdırmak (göstermek) için `print()` komutunu kullanırız." 
-        },
+        theory: { en: "To show a message on the screen in Python, we use the `print()` command.", tr: "Python'da ekrana bir yazı veya sonuç yazdırmak (göstermek) için `print()` komutunu kullanırız." },
         question: { en: "How do you print 'Hello' in Python?", tr: "Python'da ekrana 'Merhaba' yazdırmak için hangisi kullanılır?" },
         options: ["echo 'Merhaba'", "print('Merhaba')", "yazdır('Merhaba')", "console.log('Merhaba')"],
         correctAnswerIndex: 1
@@ -79,10 +80,7 @@ const pythonRoadmap = [
     {
         type: "lesson",
         title: { en: "Lesson 3: Variables", tr: "Ders 3: Değişkenler (Kutular)" },
-        theory: { 
-            en: "Variables are like boxes where we store data. E.g., `age = 20` stores the number 20 in a box named 'age'.", 
-            tr: "Değişkenler, içine bilgi koyduğumuz kutular gibidir. Örneğin `yas = 20` yazdığında, 'yas' adında bir kutu oluşturup içine 20 koyarsın." 
-        },
+        theory: { en: "Variables are like boxes where we store data. E.g., `age = 20` stores the number 20 in a box named 'age'.", tr: "Değişkenler, içine bilgi koyduğumuz kutular gibidir. Örneğin `yas = 20` yazdığında, 'yas' adında bir kutu oluşturup içine 20 koyarsın." },
         question: { en: "How do you create a variable named 'score' and set it to 10?", tr: "'skor' adında bir değişken (kutu) oluşturup içine 10 sayısını nasıl koyarsın?" },
         options: ["10 = skor", "skor(10)", "skor = 10", "kutu skor 10"],
         correctAnswerIndex: 2
@@ -98,10 +96,7 @@ const pythonRoadmap = [
     {
         type: "lesson",
         title: { en: "Lesson 4: Text vs Numbers", tr: "Ders 4: Metinler ve Sayılar" },
-        theory: { 
-            en: "Text (Strings) must be inside quotes like 'Hello'. Numbers don't need quotes.", 
-            tr: "Metinler (Yazılar) her zaman tırnak işareti içinde yazılır: 'Doki'. Sayılar ise tırnaksız yazılır: 42." 
-        },
+        theory: { en: "Text (Strings) must be inside quotes like 'Hello'. Numbers don't need quotes.", tr: "Metinler (Yazılar) her zaman tırnak işareti içinde yazılır: 'Doki'. Sayılar ise tırnaksız yazılır: 42." },
         question: { en: "Which one is a Text (String)?", tr: "Aşağıdakilerden hangisi bir Metin (String) verisidir?" },
         options: ["99", "'Elma'", "3.14", "0"],
         correctAnswerIndex: 1
@@ -117,10 +112,7 @@ const pythonRoadmap = [
     {
         type: "lesson",
         title: { en: "Lesson 5: Math Basics", tr: "Ders 5: Matematik İşlemleri" },
-        theory: { 
-            en: "You can do math in Python! Addition (+), Subtraction (-), Multiplication (*), Division (/).", 
-            tr: "Python aynı zamanda bir hesap makinesidir! Toplama (+), Çıkarma (-), Çarpma (*) ve Bölme (/) yapabilirsin." 
-        },
+        theory: { en: "You can do math in Python! Addition (+), Subtraction (-), Multiplication (*), Division (/).", tr: "Python aynı zamanda bir hesap makinesidir! Toplama (+), Çıkarma (-), Çarpma (*) ve Bölme (/) yapabilirsin." },
         question: { en: "What does `print(3 * 4)` output?", tr: "`print(3 * 4)` komutunun ekran çıktısı ne olur?" },
         options: ["3 * 4", "12", "7", "34"],
         correctAnswerIndex: 1
