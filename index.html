@@ -4,12 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doki Coding - Learn Python</title>
-    
-    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
-    
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -17,25 +13,18 @@
             theme: {
                 extend: {
                     fontFamily: { sans: ['Nunito', 'sans-serif'] },
-                    colors: { darkbg: '#0f172a', darkcard: '#1e293b' }
+                    colors: { darkbg: '#0f172a', darkcard: '#1e293b', orangefox: '#f97316' }
                 }
             }
         }
     </script>
-
     <style>
         .fade-in { animation: fadeIn 0.4s ease forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
         .path-node { transition: transform 0.2s; }
         .path-node:hover:not(.locked) { transform: scale(1.1); }
         .locked { filter: grayscale(100%); opacity: 0.5; cursor: not-allowed; }
-        
-        /* Harita Yolu Çizgisi İçin */
-        .roadmap-line {
-            position: absolute; width: 8px; background: #e2e8f0; 
-            left: 50%; transform: translateX(-50%); z-index: -1;
-        }
+        .roadmap-line { position: absolute; width: 8px; background: #e2e8f0; left: 50%; transform: translateX(-50%); z-index: -1; }
         .dark .roadmap-line { background: #334155; }
     </style>
 </head>
@@ -44,66 +33,60 @@
         document.documentElement.classList.add("dark");
     }
 </script>
-<body class="bg-slate-50 dark:bg-darkbg text-slate-800 dark:text-slate-100 min-h-screen flex flex-col selection:bg-indigo-200 transition-colors duration-300">
+<body class="bg-slate-50 dark:bg-darkbg text-slate-800 dark:text-slate-100 min-h-screen flex flex-col selection:bg-orange-200 transition-colors duration-300">
     
-    <!-- Navbar (Güncellendi: Daha Belirgin Butonlar, Emojisiz Başlık, mwp eklentisi) -->
+    <!-- Navbar -->
     <nav class="w-full bg-white dark:bg-darkcard shadow-sm p-4 flex justify-between items-center z-10 border-b border-slate-200 dark:border-slate-800">
-        <div class="text-3xl font-black text-indigo-500 tracking-tight flex items-baseline gap-1" id="app-title">
-            Doki Coding <span class="text-sm font-bold text-slate-400 dark:text-slate-500 ml-1">(mwp)</span>
+        <div class="text-3xl font-black text-orangefox tracking-tight flex items-baseline gap-2 cursor-pointer hover:scale-105 transition-transform" id="app-title" onclick="location.reload()">
+            <span class="text-4xl animate-bounce">🦊</span> Doki Coding <span class="text-sm font-bold text-slate-400 ml-1">(mwp)</span>
         </div>
-        <div class="flex gap-3">
-            <button id="theme-toggle" class="bg-indigo-50 dark:bg-slate-800 border-2 border-indigo-100 dark:border-slate-700 text-indigo-600 dark:text-indigo-400 p-3 rounded-2xl font-bold hover:bg-indigo-100 dark:hover:bg-slate-700 transition active:scale-95">
+        <div class="flex gap-3 items-center">
+            <button id="btn-login" class="hidden md:block text-slate-500 font-bold hover:text-orangefox px-2" onclick="alertAuth()"></button>
+            <button id="btn-signup" class="hidden md:block bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-4 py-2 rounded-xl font-bold hover:bg-slate-200" onclick="alertAuth()"></button>
+            <button id="theme-toggle" class="bg-orange-50 dark:bg-slate-800 border-2 border-orange-100 dark:border-slate-700 text-orange-600 dark:text-orange-400 p-3 rounded-2xl font-bold hover:bg-orange-100 dark:hover:bg-slate-700 transition active:scale-95">
                 🌙
             </button>
-            <button id="lang-toggle" class="bg-indigo-50 dark:bg-slate-800 border-2 border-indigo-100 dark:border-slate-700 text-indigo-600 dark:text-indigo-400 px-6 py-3 rounded-2xl font-bold hover:bg-indigo-100 dark:hover:bg-slate-700 transition active:scale-95">
+            <button id="lang-toggle" class="bg-orange-50 dark:bg-slate-800 border-2 border-orange-100 dark:border-slate-700 text-orange-600 dark:text-orange-400 px-6 py-3 rounded-2xl font-bold hover:bg-orange-100 dark:hover:bg-slate-700 transition active:scale-95">
                 TR / EN
             </button>
         </div>
     </nav>
 
     <!-- Main Content Area -->
-    <main class="flex-grow relative flex flex-col items-center pt-8 px-4 md:px-0 pb-20 overflow-x-hidden">
+    <main class="flex-grow relative flex flex-col items-center pt-8 px-4 md:px-0 pb-10 overflow-x-hidden">
         
-        <!-- EKRAN 1: DİL SEÇİMİ (Language Selection) -->
-        <div id="view-languages" class="w-full max-w-4xl fade-in w-full">
-            <h2 class="text-3xl font-black text-center mb-8" id="lang-select-title">Bir Dil Seç / Choose a Language</h2>
-            <!-- Grid içerisi app.js tarafından doldurulacak -->
+        <div id="view-languages" class="w-full max-w-4xl fade-in">
+            <h2 class="text-3xl font-black text-center mb-8" id="lang-select-title"></h2>
             <div id="language-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
         </div>
 
-        <!-- EKRAN 2: YOL HARİTASI (Duolingo Style Roadmap) -->
         <div id="view-roadmap" class="w-full max-w-md fade-in hidden relative flex flex-col items-center">
             <div class="flex justify-between w-full mb-8 items-center bg-white dark:bg-darkcard p-4 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700">
-                <button id="back-to-langs" class="text-slate-400 hover:text-indigo-500 font-bold px-4 py-2">⬅ Geri</button>
-                <div class="font-black text-xl flex items-center gap-2">
+                <button id="back-to-langs" class="text-slate-400 hover:text-orangefox font-bold px-4 py-2">⬅</button>
+                <div class="font-black text-xl flex items-center gap-2 text-blue-500">
                     <i class="devicon-python-plain colored text-2xl"></i> Python
                 </div>
-                <div class="w-16"></div> <!-- Spacer for centering -->
+                <div class="w-16"></div>
             </div>
-            
-            <!-- Yol haritası adımları app.js tarafından buraya çizilecek -->
-            <div id="roadmap-path" class="relative w-full flex flex-col items-center gap-6 py-10">
+            <div id="roadmap-path" class="relative w-full flex flex-col items-center gap-8 py-10">
                 <div class="roadmap-line h-full top-0"></div>
             </div>
         </div>
 
-        <!-- EKRAN 3: DERS / TEST EKRANI -->
         <div id="view-lesson" class="w-full max-w-3xl fade-in hidden">
-            <!-- İlerleme Çubuğu -->
             <div class="flex justify-between items-center mb-6">
                 <button id="back-to-roadmap" class="text-slate-400 hover:text-red-500 font-bold text-2xl">✖</button>
                 <div class="w-3/4 bg-slate-200 dark:bg-slate-700 rounded-full h-4 p-1">
                     <div class="bg-green-400 h-full rounded-full transition-all duration-500" id="progress-bar" style="width: 0%"></div>
                 </div>
             </div>
-
-            <!-- Ders İçeriği -->
-            <div class="bg-white dark:bg-darkcard rounded-[2.5rem] shadow-xl p-8 md:p-12 border border-slate-100 dark:border-slate-800" id="content-area">
-                <!-- app.js burayı dolduracak -->
-            </div>
+            <div class="bg-white dark:bg-darkcard rounded-[2.5rem] shadow-xl p-8 md:p-12 border border-slate-100 dark:border-slate-800" id="content-area"></div>
         </div>
 
     </main>
+
+    <footer class="w-full text-center py-4 text-xs md:text-sm font-bold text-slate-400 dark:text-slate-500 border-t border-slate-200 dark:border-slate-800 mt-auto bg-white dark:bg-darkcard" id="app-footer">
+    </footer>
 
     <script src="data.js"></script>
     <script src="app.js"></script>
