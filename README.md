@@ -35,7 +35,6 @@ A typical learning path can include:
 - coding-focused challenges
 - progressive lessons
 - a visual learning roadmap
-- an in-browser mini code editor
 - immediate feedback
 - local progress tracking
 - a lightweight gamified experience
