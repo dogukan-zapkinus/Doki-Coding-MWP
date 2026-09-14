@@ -37,7 +37,6 @@ Bir öğrenme yolu şunları içerebilir:
 - kodlama odaklı alıştırmalar
 - aşamalı dersler
 - görsel yol haritası
-- tarayıcı içi mini kod editörü
 - anında geri bildirim
 - yerel ilerleme kaydı
 - hafif bir oyunlaştırma deneyimi
