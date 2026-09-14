@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doki Coding - Learn Python</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .option-btn { transition: all 0.2s ease; }
+        .option-btn:hover:not(:disabled) { transform: translateY(-2px); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col selection:bg-indigo-200">
+    
+    <!-- Navigation Bar -->
+    <nav class="w-full bg-white shadow-sm p-4 flex justify-between items-center z-10">
+        <div class="text-2xl font-extrabold text-indigo-600 tracking-tight" id="app-title">Doki Coding</div>
+        <button id="lang-toggle" class="bg-slate-100 text-slate-600 px-4 py-2 rounded-full font-bold hover:bg-slate-200 transition">
+            TR / EN
+        </button>
+    </nav>
+
+    <!-- Main Application Area -->
+    <main class="flex-grow flex flex-col items-center justify-start pt-10 px-4 md:px-0">
+        
+        <!-- Progress Bar Container -->
+        <div class="w-full max-w-2xl mb-8 hidden fade-in" id="progress-container">
+            <div class="flex justify-between mb-2">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider" id="progress-text">Progress</span>
+                <span class="text-xs font-bold text-indigo-600" id="progress-percentage">0%</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-4">
+                <div class="bg-green-400 h-4 rounded-full transition-all duration-700 ease-out" id="progress-bar" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Dynamic Content Card -->
+        <div class="w-full max-w-2xl bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 md:p-10 border border-slate-100 fade-in" id="content-area">
+        </div>
+
+    </main>
+
+    <!-- Scripts -->
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
