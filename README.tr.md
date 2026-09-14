@@ -241,8 +241,6 @@ Eğitim içeriği üretirken karmaşıklıktan daha önemli olan şey anlaşıla
 
 Bir dersin, deneyimli bir geliştiriciye değil, gerçekten başlangıç seviyesindeki kişiye hitap etmesi gerekir.
 
-https://www.patreon.com/cw/dogukancengiz
-
 ---
 
 ## Felsefe
