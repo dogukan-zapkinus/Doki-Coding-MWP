@@ -1,67 +1,183 @@
 // --- Application State ---
-let currentLang = localStorage.getItem("dokicoding_lang") || "en";
-let currentLessonIndex = parseInt(localStorage.getItem("dokicoding_progress")) || 0;
+let currentLang = localStorage.getItem("dokicoding_lang") || "tr";
+let currentTheme = localStorage.getItem("dokicoding_theme") || "dark";
+// Python için ilerlemeyi tutalım (0'dan 9'a kadar)
+let pythonProgress = parseInt(localStorage.getItem("dokicoding_python_progress")) || 0; 
+let currentStepIndex = null;
 let selectedOptionIndex = null;
-let isDark = document.documentElement.classList.contains("dark");
+
+// Ses Motoru (Harici mp3 gerektirmez, bip sesleri üretir)
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playSound(type) {
+    if (!audioCtx) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    
+    const osc = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    osc.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    
+    if (type === 'correct') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // Notalar
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.1); 
+        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.3);
+    } else {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.3);
+    }
+}
 
 // --- DOM Elements ---
-const appTitle = document.getElementById("app-title");
 const langToggle = document.getElementById("lang-toggle");
 const themeToggle = document.getElementById("theme-toggle");
-const contentArea = document.getElementById("content-area");
-const progressBar = document.getElementById("progress-bar");
-const progressContainer = document.getElementById("progress-container");
-const progressText = document.getElementById("progress-text");
-const progressPercentage = document.getElementById("progress-percentage");
+
+const viewLanguages = document.getElementById("view-languages");
+const viewRoadmap = document.getElementById("view-roadmap");
+const viewLesson = document.getElementById("view-lesson");
 
 // --- Core Initialization ---
 function init() {
     updateStaticUI();
-    if (currentLessonIndex >= lessons.length) {
-        renderCompletedState();
-    } else {
-        renderLesson();
-    }
+    showView('languages');
+    renderLanguages();
 }
 
-// --- UI Updaters ---
 function updateStaticUI() {
-    progressText.innerText = i18n[currentLang].progress;
     langToggle.innerText = currentLang === "en" ? "🇹🇷 TR" : "🇬🇧 EN";
-    themeToggle.innerText = isDark ? "☀️" : "🌙";
+    themeToggle.innerText = currentTheme === "dark" ? "☀️" : "🌙";
+    document.getElementById("lang-select-title").innerText = currentLang === "en" ? "Choose a Language" : "Bir Dil Seç";
 }
 
-function updateProgress() {
-    progressContainer.classList.remove("hidden");
-    const percentage = Math.round((currentLessonIndex / lessons.length) * 100);
-    progressBar.style.width = `${percentage}%`;
-    progressPercentage.innerText = `${percentage}%`;
+// --- View Router ---
+function showView(viewName) {
+    viewLanguages.classList.add("hidden");
+    viewRoadmap.classList.add("hidden");
+    viewLesson.classList.add("hidden");
+
+    if (viewName === 'languages') viewLanguages.classList.remove("hidden");
+    if (viewName === 'roadmap') {
+        viewRoadmap.classList.remove("hidden");
+        renderRoadmap();
+    }
+    if (viewName === 'lesson') viewLesson.classList.remove("hidden");
 }
 
-function renderLesson() {
-    updateProgress();
+// --- EKRAN 1: Diller ---
+function renderLanguages() {
+    const grid = document.getElementById("language-grid");
+    grid.innerHTML = "";
+
+    availableLanguages.forEach(lang => {
+        const btn = document.createElement("button");
+        // Kilitli mi Açık mı stili
+        const baseStyle = "flex flex-col items-center justify-center p-6 rounded-3xl border-4 transition-all ";
+        if (lang.locked) {
+            btn.className = baseStyle + "locked border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900";
+            btn.onclick = () => alert(i18n[currentLang].lockedMsg);
+        } else {
+            btn.className = baseStyle + `border-slate-200 dark:border-slate-700 bg-white dark:bg-darkcard hover:border-blue-400 dark:hover:border-blue-500 hover:-translate-y-2 hover:shadow-xl cursor-pointer`;
+            btn.onclick = () => showView('roadmap');
+        }
+
+        btn.innerHTML = `
+            <i class="${lang.icon} colored text-6xl mb-4 ${lang.locked ? 'opacity-50 grayscale' : ''}"></i>
+            <span class="font-black text-xl text-slate-700 dark:text-slate-300">${lang.name}</span>
+            ${lang.locked ? '<span class="mt-2 text-xs font-bold text-slate-400 bg-slate-200 dark:bg-slate-800 px-3 py-1 rounded-full">🔒 Lvl 10</span>' : ''}
+        `;
+        grid.appendChild(btn);
+    });
+}
+
+// --- EKRAN 2: Yol Haritası (Duolingo Stili) ---
+function renderRoadmap() {
+    const pathContainer = document.getElementById("roadmap-path");
+    // Çizgi hariç içini temizle
+    pathContainer.innerHTML = '<div class="roadmap-line h-full top-0"></div>';
+
+    pythonRoadmap.forEach((step, index) => {
+        const isCompleted = index < pythonProgress;
+        const isCurrent = index === pythonProgress;
+        const isLocked = index > pythonProgress;
+
+        const node = document.createElement("button");
+        
+        // Sağ-Sol zigzag hesaplaması (Duolingo stili)
+        const offset = Math.sin(index) * 60; 
+        node.style.transform = `translateX(${offset}px)`;
+
+        // Stil sınıfları
+        let classes = "path-node relative w-20 h-20 rounded-full border-[6px] flex items-center justify-center z-10 font-black text-3xl shadow-lg ";
+        
+        if (isCompleted) {
+            classes += "bg-green-400 border-green-500 text-white shadow-green-500/50 cursor-pointer hover:scale-110";
+            node.innerHTML = "⭐";
+            node.onclick = () => startLesson(index);
+        } else if (isCurrent) {
+            // Mevcut adım yanıp sönsün (pulse)
+            classes += "bg-indigo-400 border-indigo-500 text-white shadow-indigo-500/50 animate-bounce cursor-pointer";
+            node.innerHTML = step.type === 'lesson' ? "📖" : "⚔️";
+            node.onclick = () => startLesson(index);
+        } else {
+            classes += "locked bg-slate-200 border-slate-300 dark:bg-slate-700 dark:border-slate-600 text-slate-400";
+            node.innerHTML = "🔒";
+        }
+
+        node.className = classes;
+        pathContainer.appendChild(node);
+    });
+}
+
+document.getElementById("back-to-langs").onclick = () => showView('languages');
+document.getElementById("back-to-roadmap").onclick = () => showView('roadmap');
+
+// --- EKRAN 3: Ders İşleme ---
+function startLesson(index) {
+    currentStepIndex = index;
     selectedOptionIndex = null;
-    const lesson = lessons[currentLessonIndex];
+    showView('lesson');
     
+    // Progress bar'ı üst kısımda güncelle
+    const pb = document.getElementById("progress-bar");
+    const percentage = Math.round(((index + 1) / pythonRoadmap.length) * 100);
+    pb.style.width = `${percentage}%`;
+
+    const step = pythonRoadmap[currentStepIndex];
+    const contentArea = document.getElementById("content-area");
+    
+    let isTest = step.type === 'test';
+    let icon = isTest ? "🧠" : "💡";
+    let colorTheme = isTest ? "orange" : "indigo"; // Testler turuncu, dersler mor
+
     let html = `
-        <div class="pop-in">
-            <h2 class="text-4xl font-black text-slate-800 dark:text-white mb-6 tracking-tight">${lesson.title[currentLang]}</h2>
-            
-            <div class="bg-indigo-50 dark:bg-indigo-900/30 border-l-8 border-indigo-500 p-6 mb-10 rounded-r-3xl">
-                <p class="text-xl text-slate-700 dark:text-indigo-100 font-medium leading-relaxed">${lesson.theory[currentLang]}</p>
+        <div class="animate-[popIn_0.4s_ease-out]">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-4xl">${icon}</span>
+                <h2 class="text-3xl font-black text-slate-800 dark:text-white tracking-tight">${step.title[currentLang]}</h2>
             </div>
             
-            <h3 class="text-2xl font-bold text-slate-800 dark:text-slate-200 mb-6">${lesson.question[currentLang]}</h3>
+            <div class="bg-${colorTheme}-50 dark:bg-${colorTheme}-900/30 border-l-8 border-${colorTheme}-500 p-6 mb-8 rounded-r-3xl">
+                <p class="text-xl text-slate-700 dark:text-${colorTheme}-100 font-medium leading-relaxed">${step.theory[currentLang]}</p>
+            </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10" id="options-container">
+            <h3 class="text-2xl font-bold text-slate-800 dark:text-slate-200 mb-6">${step.question[currentLang]}</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8" id="options-container">
     `;
 
-    lesson.options.forEach((opt, index) => {
+    step.options.forEach((opt, idx) => {
         html += `
             <button 
-                class="option-btn border-4 border-slate-100 dark:border-slate-700 dark:bg-slate-800 rounded-3xl p-6 text-left font-mono font-bold text-slate-700 dark:text-slate-300 text-lg hover:border-indigo-400 dark:hover:border-indigo-500 focus:outline-none transition-colors"
-                onclick="selectOption(${index})"
-                id="option-${index}"
+                class="option-btn border-4 border-slate-100 dark:border-slate-700 dark:bg-slate-800 rounded-3xl p-5 text-left font-bold text-slate-700 dark:text-slate-300 text-lg hover:border-${colorTheme}-400 dark:hover:border-${colorTheme}-500 focus:outline-none transition-colors"
+                onclick="selectOption(${idx})"
+                id="option-${idx}"
             >
                 ${opt}
             </button>
@@ -71,7 +187,7 @@ function renderLesson() {
     html += `
             </div>
             
-            <div id="feedback-area" class="min-h-[4rem] mb-8 flex items-center font-black text-xl rounded-2xl px-6 py-4 hidden pop-in"></div>
+            <div id="feedback-area" class="min-h-[4rem] mb-6 flex items-center font-black text-xl rounded-2xl px-6 py-4 hidden"></div>
             
             <button 
                 id="action-btn"
@@ -87,42 +203,26 @@ function renderLesson() {
     contentArea.innerHTML = html;
 }
 
-function renderCompletedState() {
-    progressContainer.classList.add("hidden");
-    contentArea.innerHTML = `
-        <div class="text-center py-16 pop-in">
-            <div class="text-8xl mb-8 animate-bounce">🏆</div>
-            <h2 class="text-5xl font-black text-green-500 dark:text-green-400 mb-6">${i18n[currentLang].completed}</h2>
-            <p class="text-xl text-slate-500 dark:text-slate-400 mb-10 font-bold">Harika bir başlangıç yaptın!</p>
-            <button 
-                class="bg-indigo-500 text-white font-black py-5 px-12 rounded-full text-2xl hover:bg-indigo-600 transition shadow-[0_10px_30px_rgba(99,102,241,0.4)] active:scale-95"
-                onclick="restartCourse()"
-            >
-                ${i18n[currentLang].restart}
-            </button>
-        </div>
-    `;
-}
-
-// --- Interactions ---
 window.selectOption = function(index) {
-    const lesson = lessons[currentLessonIndex];
-    
-    lesson.options.forEach((_, i) => {
+    const step = pythonRoadmap[currentStepIndex];
+    let isTest = step.type === 'test';
+    let colorTheme = isTest ? "orange" : "indigo";
+
+    step.options.forEach((_, i) => {
         const btn = document.getElementById(`option-${i}`);
-        btn.classList.remove("border-indigo-500", "bg-indigo-50", "dark:bg-indigo-900/40", "text-indigo-700", "dark:text-indigo-300");
+        btn.classList.remove(`border-${colorTheme}-500`, `bg-${colorTheme}-50`, `dark:bg-${colorTheme}-900/40`, `text-${colorTheme}-700`, `dark:text-${colorTheme}-300`);
         btn.classList.add("border-slate-100", "dark:border-slate-700", "dark:bg-slate-800");
     });
 
     selectedOptionIndex = index;
     const selectedBtn = document.getElementById(`option-${index}`);
     selectedBtn.classList.remove("border-slate-100", "dark:border-slate-700", "dark:bg-slate-800");
-    selectedBtn.classList.add("border-indigo-500", "bg-indigo-50", "dark:bg-indigo-900/40", "text-indigo-700", "dark:text-indigo-300");
+    selectedBtn.classList.add(`border-${colorTheme}-500`, `bg-${colorTheme}-50`, `dark:bg-${colorTheme}-900/40`, `text-${colorTheme}-700`, `dark:text-${colorTheme}-300`);
 
     const actionBtn = document.getElementById("action-btn");
     actionBtn.disabled = false;
     actionBtn.classList.remove("bg-slate-200", "dark:bg-slate-700", "text-slate-400", "dark:text-slate-500", "cursor-not-allowed");
-    actionBtn.classList.add("bg-indigo-500", "text-white", "hover:bg-indigo-600", "shadow-[0_10px_20px_rgba(99,102,241,0.3)]");
+    actionBtn.classList.add(`bg-${colorTheme}-500`, "text-white", `hover:bg-${colorTheme}-600`);
 };
 
 window.handleAction = function() {
@@ -130,68 +230,67 @@ window.handleAction = function() {
     if (actionBtn.innerText === i18n[currentLang].check) {
         checkAnswer();
     } else {
-        nextLesson();
+        finishStep();
     }
 };
 
 function checkAnswer() {
-    const lesson = lessons[currentLessonIndex];
+    // Sesin çalışması için kullanıcının ilk tıklamasını algılaması gerekir (Tarayıcı kuralı)
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    
+    const step = pythonRoadmap[currentStepIndex];
     const feedbackArea = document.getElementById("feedback-area");
     const actionBtn = document.getElementById("action-btn");
-    const selectedBtn = document.getElementById(`option-${selectedOptionIndex}`);
+    let colorTheme = step.type === 'test' ? "orange" : "indigo";
 
     feedbackArea.classList.remove("hidden");
 
-    lesson.options.forEach((_, i) => {
+    step.options.forEach((_, i) => {
         document.getElementById(`option-${i}`).disabled = true;
     });
 
-    if (selectedOptionIndex === lesson.correctAnswerIndex) {
+    if (selectedOptionIndex === step.correctAnswerIndex) {
+        playSound('correct');
         feedbackArea.classList.add("bg-green-100", "dark:bg-green-900/50", "text-green-700", "dark:text-green-400");
         feedbackArea.innerText = "✨ " + i18n[currentLang].correct;
         
-        selectedBtn.classList.replace("border-indigo-500", "border-green-500");
-        
         actionBtn.innerText = i18n[currentLang].next;
-        actionBtn.classList.replace("bg-indigo-500", "bg-green-500");
-        actionBtn.classList.replace("hover:bg-indigo-600", "hover:bg-green-600");
-        actionBtn.classList.replace("shadow-[0_10px_20px_rgba(99,102,241,0.3)]", "shadow-[0_10px_20px_rgba(34,197,94,0.3)]");
+        actionBtn.className = "w-full text-white font-black py-5 rounded-3xl text-2xl transition-all bg-green-500 hover:bg-green-600 shadow-[0_10px_20px_rgba(34,197,94,0.3)]";
     } else {
+        playSound('wrong');
         feedbackArea.classList.add("bg-red-100", "dark:bg-red-900/50", "text-red-700", "dark:text-red-400");
         feedbackArea.innerText = "❌ " + i18n[currentLang].wrong;
         
-        selectedBtn.classList.replace("border-indigo-500", "border-red-500");
-        
         setTimeout(() => {
             feedbackArea.classList.add("hidden");
-            feedbackArea.classList.remove("bg-red-100", "dark:bg-red-900/50", "text-red-700", "dark:text-red-400");
+            feedbackArea.className = "min-h-[4rem] mb-6 flex items-center font-black text-xl rounded-2xl px-6 py-4 hidden";
             
-            selectedBtn.classList.replace("border-red-500", "border-indigo-500");
-
-            lesson.options.forEach((_, i) => {
+            step.options.forEach((_, i) => {
                 document.getElementById(`option-${i}`).disabled = false;
             });
+            // Seçimi sıfırla
+            document.getElementById(`option-${selectedOptionIndex}`).className = "option-btn border-4 border-slate-100 dark:border-slate-700 dark:bg-slate-800 rounded-3xl p-5 text-left font-bold text-slate-700 dark:text-slate-300 text-lg transition-colors";
+            actionBtn.innerText = i18n[currentLang].check;
+            actionBtn.className = "w-full bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 font-black py-5 rounded-3xl text-2xl cursor-not-allowed transition-all";
+            actionBtn.disabled = true;
         }, 1500);
     }
 }
 
-function nextLesson() {
-    currentLessonIndex++;
-    localStorage.setItem("dokicoding_progress", currentLessonIndex);
-    
-    if (currentLessonIndex >= lessons.length) {
-        updateProgress();
-        setTimeout(renderCompletedState, 300);
-    } else {
-        renderLesson();
+function finishStep() {
+    // İlerlemeyi kaydet (eğer daha geriden bir dersi tekrar çözmüyorsa)
+    if (currentStepIndex === pythonProgress) {
+        pythonProgress++;
+        localStorage.setItem("dokicoding_python_progress", pythonProgress);
     }
+    
+    // Eğer tüm harita bittiyse
+    if (pythonProgress >= pythonRoadmap.length) {
+        alert(i18n[currentLang].completed);
+    }
+    
+    showView('roadmap');
 }
-
-window.restartCourse = function() {
-    currentLessonIndex = 0;
-    localStorage.setItem("dokicoding_progress", 0);
-    init();
-};
 
 // --- Listeners ---
 langToggle.addEventListener("click", () => {
@@ -202,9 +301,10 @@ langToggle.addEventListener("click", () => {
 
 themeToggle.addEventListener("click", () => {
     document.documentElement.classList.toggle("dark");
-    isDark = document.documentElement.classList.contains("dark");
-    localStorage.setItem("dokicoding_theme", isDark ? "dark" : "light");
+    currentTheme = document.documentElement.classList.contains("dark") ? "dark" : "light";
+    localStorage.setItem("dokicoding_theme", currentTheme);
     updateStaticUI();
 });
 
+// Boot Application
 init();
