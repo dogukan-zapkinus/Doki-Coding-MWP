@@ -120,7 +120,6 @@ The current experience includes:
 - Turkish and English interface support
 - interactive feedback
 - sound feedback
-- a fox-style learning companion
 - a short onboarding flow
 
 Other programming languages may appear in the interface before their full learning paths are ready. Those paths are intentionally kept locked until their content reaches the expected quality bar.
@@ -146,20 +145,6 @@ Instead:
 7. move forward
 
 The project is designed around that loop.
-
----
-
-## Why the fox?
-
-Because learning does not have to feel cold.
-
-Doki Coding uses a small fox companion to make feedback feel more human and memorable.
-
-The fox can react to progress, encourage another attempt, and make mistakes feel like part of the learning process rather than a failure state.
-
-The goal is not to copy another product.
-
-The goal is to make Doki Coding feel recognizable as its own learning experience.
 
 ---
 
